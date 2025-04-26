@@ -23,9 +23,10 @@ library(janitor)    #Cleaning
 library(naniar)     #Cleaning (NA's)
 library(ggplot2)    #Data visualization
 ```
+
 ### Defaults and style guide for graphs
+
 ```R
-# Defaults
 colour1 <- "#FAAB18"   # yellow
 colourCasual <- "#4285F4"   # blue
 colourMember <- "#FF8400"   # orange"
@@ -128,7 +129,9 @@ finalise_plot <- function(plot) {
   #invisible(plot_grid)
 }
 ```
+
 ### Load data
+
 ```R
 #https://divvy-tripdata.s3.amazonaws.com/index.html
 q1_2019 <- read_csv("2019/Divvy_Trips_2019_Q1.csv")
@@ -137,9 +140,10 @@ q3_2019 <- read_csv("2019/Divvy_Trips_2019_Q3.csv")
 q4_2019 <- read_csv("2019/Divvy_Trips_2019_Q4.csv")
 stations <- read_csv("2019/Divvy_Stations_2014-Q3Q4.csv")
 ```
+
 ### Check column names and data types
+
 ```R
-# compare column names
 data.frame(colnames(q1_2019),colnames(q2_2019),colnames(q3_2019),colnames(q4_2019))
 
 
@@ -171,8 +175,9 @@ data.frame(colnames(q1_2019),colnames(q2_2019),colnames(q3_2019),colnames(q4_201
 ## 12         birthyear         birthyear
 ```
 
+### compare column data types
+
 ```R
-# compare column data types
 compare_df_cols(q1_2019, q2_2019, q3_2019, q4_2019, return = "mismatch")
 
 
@@ -180,6 +185,326 @@ compare_df_cols(q1_2019, q2_2019, q3_2019, q4_2019, return = "mismatch")
 ## <0 rows> (or 0-length row.names)
 ```
 
+### Rename columns
+```R
+(q1_2019 <- rename(q1_2019
+                   ,bike_id = bikeid
+                   ,trip_duration = tripduration
+                   ,birth_year = birthyear
+                   ,start_station_name = from_station_name 
+                   ,start_station_id = from_station_id 
+                   ,end_station_name = to_station_name 
+                   ,end_station_id = to_station_id))
+
+(q2_2019 <- rename(q2_2019
+                   ,trip_id = "01 - Rental Details Rental ID"
+                   ,bike_id = "01 - Rental Details Bike ID" 
+                   ,start_time = "01 - Rental Details Local Start Time"  
+                   ,trip_duration = "01 - Rental Details Duration In Seconds Uncapped"  
+                   ,end_time = "01 - Rental Details Local End Time"  
+                   ,start_station_name = "03 - Rental Start Station Name" 
+                   ,start_station_id = "03 - Rental Start Station ID"
+                   ,end_station_name = "02 - Rental End Station Name" 
+                   ,end_station_id = "02 - Rental End Station ID"
+                   ,gender = "Member Gender" 
+                   ,birth_year = "05 - Member Details Member Birthday Year"
+                   ,usertype = "User Type"))
+
+(q3_2019 <- rename(q3_2019
+                   ,bike_id = bikeid
+                   ,trip_duration = tripduration
+                   ,birth_year = birthyear
+                   ,start_station_name = from_station_name 
+                   ,start_station_id = from_station_id 
+                   ,end_station_name = to_station_name 
+                   ,end_station_id = to_station_id))
+
+(q4_2019 <- rename(q4_2019
+                   ,bike_id = bikeid
+                   ,trip_duration = tripduration
+                   ,birth_year = birthyear
+                   ,start_station_name = from_station_name 
+                   ,start_station_id = from_station_id 
+                   ,end_station_name = to_station_name 
+                   ,end_station_id = to_station_id))
+```
+
+### Compare columns names
+
+```R
+data.frame(colnames(q1_2019),colnames(q2_2019),colnames(q3_2019),colnames(q4_2019))
+
+
+##     colnames.q1_2019.  colnames.q2_2019.  colnames.q3_2019.  colnames.q4_2019.
+## 1             trip_id            trip_id            trip_id            trip_id
+## 2          start_time         start_time         start_time         start_time
+## 3            end_time           end_time           end_time           end_time
+## 4             bike_id            bike_id            bike_id            bike_id
+## 5       trip_duration      trip_duration      trip_duration      trip_duration
+## 6    start_station_id   start_station_id   start_station_id   start_station_id
+## 7  start_station_name start_station_name start_station_name start_station_name
+## 8      end_station_id     end_station_id     end_station_id     end_station_id
+## 9    end_station_name   end_station_name   end_station_name   end_station_name
+## 10           usertype           usertype           usertype           usertype
+## 11             gender             gender             gender             gender
+## 12         birth_year         birth_year         birth_year         birth_year
+```
+
+### Are column names all the same ?
+
+```R
+compare_df_cols_same(q1_2019, q2_2019, q3_2019, q4_2019)
+
+
+## [1] TRUE
+```
+
+### Compare column data types
+
+```R
+compare_df_cols(q1_2019, q2_2019, q3_2019, q4_2019, return = "mismatch")
+
+
+## [1] column_name q1_2019     q2_2019     q3_2019     q4_2019    
+## <0 rows> (or 0-length row.names)
+```
+
+### Combine data frames
+
+```R
+total_trips <- rbind(q1_2019, q2_2019, q3_2019, q4_2019)
+```
+
+### Change data types
+
+```R
+total_trips <- mutate(total_trips, trip_id = as.integer(trip_id),
+                      bike_id = as.integer(bike_id),
+                      start_station_id = as.integer(start_station_id),
+                      end_station_id = as.integer(end_station_id),
+                      usertype = as.factor(usertype),
+                      gender = as.factor(gender))
+# summary(total_trips)
+```
+
+### Check station name spelling. What station is in end_station_name but not start_station_name coloumns ?
+
+```R
+start_stations <- select(total_trips, start_station_name) |>
+  mutate(start_station_name = tolower(start_station_name)) |>
+  group_by(start_station_name) |>
+  summarise(no_rows = length(start_station_name)) |>
+  arrange(no_rows) |>
+  select(station_name = start_station_name)
+# A tibble: 640 × 1
+
+end_stations <- select(total_trips, end_station_name) |>
+  mutate(end_station_name = tolower(end_station_name)) |>
+  group_by(end_station_name) |>
+  summarise(no_rows = length(end_station_name)) |>
+  arrange(no_rows) |>
+  select(station_name = end_station_name)
+# A tibble: 641 × 1
+
+start_id <- select(total_trips, start_station_name, start_station_id) |>
+  group_by(start_station_name) |>
+  summarise(no_rows = length(start_station_name))
+# A tibble: 640 × 2
+
+end_id <- select(total_trips, end_station_name, end_station_id) |>
+  group_by(end_station_name) |>
+  summarise(no_rows = length(end_station_name))
+# A tibble: 641 × 2
+
+anti_join(start_stations, end_stations, by = "station_name")
+
+
+## # A tibble: 0 × 1
+## # … with 1 variable: station_name <chr>
+
+
+anti_join(end_stations, start_stations, by = "station_name")
+
+
+## # A tibble: 1 × 1
+##   station_name            
+##   <chr>                   
+## 1 ts ~ divvy parts testing
+```
+
+### Check age range. Someone was born on 1759
+
+```R
+ages <- select(total_trips, birth_year) |>
+  mutate(age = 2019 - birth_year) 
+
+ggplot(ages, aes(x = age)) +
+  geom_histogram(binwidth = 10, na.rm = TRUE, colour = "white", fill = colourGrey) +
+  upright_style() +
+  baseLine_style() +
+  labs(title = "Age of riders",
+       subtitle = "5 to 260 years old")
+```
+
+>
+> graph here
+>
+
+```R
+arrange(ages, age)
+
+
+## # A tibble: 3,818,004 × 2
+##    birth_year   age
+##         <dbl> <dbl>
+##  1       2014     5
+##  2       2014     5
+##  3       2014     5
+##  4       2014     5
+##  5       2014     5
+##  6       2003    16
+##  7       2003    16
+##  8       2003    16
+##  9       2003    16
+## 10       2003    16
+## # … with 3,817,994 more rows
+
+arrange(ages, -age)
+
+
+## # A tibble: 3,818,004 × 2
+##    birth_year   age
+##         <dbl> <dbl>
+##  1       1759   260
+##  2       1790   229
+##  3       1888   131
+##  4       1888   131
+##  5       1888   131
+##  6       1888   131
+##  7       1888   131
+##  8       1888   131
+##  9       1888   131
+## 10       1888   131
+## # … with 3,817,994 more rows
+
+highAgeRange <- filter(ages, age > 65 & age < 85)
+
+ggplot(highAgeRange, aes(x = age)) +
+  geom_histogram(binwidth = 1, colour = "white", fill = colourGrey) +
+  upright_style() +
+  baseLine_style() +
+  scale_x_continuous(limits = c(65, 85),
+                     breaks = seq(65, 85, by = 5),
+                     labels = c("65", "70", "75", "80", "90")) +
+  labs(title = "Age of riders",
+       subtitle = "65 to years old")
+
+
+## Warning: Removed 2 rows containing missing values (geom_bar).
+```
+
+>
+> graph here
+>
+
+```R
+dim(filter(ages, age > 75))
+
+## [1] 1954    2
+
+dim(filter(ages, age < 16))
+
+## [1] 5 2
+```
+
+### 1954 riders have ages between 76 and 260. 5 riders are 5 years old. This is incorrect data. Replace false birth_year data with NA’s and gender NA’s with Unknown.
+
+```R
+trips.cleaned <- total_trips |>
+  mutate_at(vars(birth_year),
+            function(.var){
+              if_else(.var < 1944 | .var > 2003,
+                      true = as.numeric(NA),
+                      false = .var)
+            }) |>
+  mutate(gender = fct_explicit_na(gender, na_level = "Unknown"))
+summary(trips.cleaned)
+```
+
+## Process
+
+### Tidy up columns. Covert trip_duration from seconds to minutes. Age is more useful than birth_year. Split start_time into month weekday and hour. Knowing if trip is over more than one day might be useful. Change usertype factors to Member and Casual.
+
+```R
+trips.cleaned <- trips.cleaned |>
+  mutate(trip_duration = as.integer(trip_duration / 60)) |> # sec to min
+  mutate(age = 2019 - birth_year) |>
+  mutate(month = month(start_time)) |>
+  mutate(weekday = wday(start_time, TRUE, TRUE)) |> # (dateTime, label, abbr)
+  mutate(hour = hour(start_time)) |>
+  mutate(returned_same_day = ifelse(wday(start_time) == wday(end_time), TRUE, FALSE)) |>
+  mutate(usertype = as.factor(ifelse(usertype == "Subscriber", "Member", "Casual")))
+        
+# summary(trips.cleaned)
+```
+
+## Discriptive analysis
+
+### Compare members and casual users
+
+```R
+aggregate(trips.cleaned$trip_duration ~ trips.cleaned$usertype, FUN = mean)
+##   trips.cleaned$usertype trips.cleaned$trip_duration
+## 1                 Casual                    56.52344
+## 2                 Member                    13.83169
+
+aggregate(trips.cleaned$trip_duration ~ trips.cleaned$usertype, FUN = median)
+##   trips.cleaned$usertype trips.cleaned$trip_duration
+## 1                 Casual                          25
+## 2                 Member                           9
+
+# plotting graph
+pie <- trips.cleaned |>
+  group_by(usertype) |>
+  summarise(number_trips = n()) |>
+  mutate(percentage = round(number_trips / sum(number_trips), 3))
+pie
+## # A tibble: 2 × 3
+##   usertype number_trips percentage
+##   <fct>           <int>      <dbl>
+## 1 Casual         880637      0.231
+## 2 Member        2937367      0.769
+```
+
+```R
+pie |>
+  ggplot(aes(x="", y=percentage, fill=usertype)) +
+  geom_bar(stat="identity", width=1, color="white") +
+  coord_polar("y", start = 0) +
+  theme_minimal() +
+  #upright_style() +
+  labs(x ="", y = "") +#, title = "Distribution of trips") +
+  geom_text(aes(label = scales::percent(percentage, accuracy = 1.0, trim = FALSE)),
+            position = position_stack(vjust = 0.5)) +
+  geom_label(aes(label = glue::glue("{usertype}\n{scales::percent(percentage)}")),
+                  position = position_stack(vjust = 0.5),
+             label.size = NA,
+             size = 6) +
+  scale_fill_manual(values = c(colourCasual, colourMember)) +
+  theme(plot.title = element_text(family ="Helvetica",
+                                  size = 28,
+                                  face = "bold",
+                                  colour = "#222222"),
+        plot.title.position = "plot", 
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid  = element_blank(),
+        legend.position = "none")
+```
+
+>
+> graph here
+>
 
 
 
@@ -193,3 +518,5 @@ compare_df_cols(q1_2019, q2_2019, q3_2019, q4_2019, return = "mismatch")
 
 
 
+
+# Foo
