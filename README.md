@@ -770,6 +770,292 @@ ggplot(trips_by_month_weekend, aes(x = month, y = number_of_rides, colour = user
              size = 3.25)
 ```
 
+```R
+trips_by_month_week <- trips.cleaned |> 
+  filter(weekday == "Mon" | weekday == "Tue" | weekday == "Wed" | weekday == "Thu"| weekday == "Fri") |>
+  group_by(month, usertype) |>  # groups by usertype and weekday
+  summarise(number_of_rides = n()   # number of rides 
+            ,average_duration = mean(trip_duration)) |>
+  arrange(month, usertype)
+
+ggplot(trips_by_month_week, aes(x = month, y = number_of_rides, colour = usertype)) +
+  geom_line(size = 1) +
+  upright_style() +
+  theme(legend.position = "none") +
+  scale_x_continuous(limits = c(1, 13), breaks = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13),
+                     labels = c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug","Sep", "Oct", "Nov", "Dec", "")) +
+  scale_y_continuous(limits = c(0, 450000), breaks = seq(0, 450000, by = 100000),
+                     labels = c("0", "1", "2", "3", "4")) +
+  baseLine_style() +
+  scale_colour_manual(values = c(colourCasual, colourMember)) +
+  labs(title="Number of riders per month",
+       subtitle = "During week days",
+       y = "Number of rides (100,000s)", x = "") +
+  geom_label(aes(x = 12.25, y = 14000, label = "Casual"), 
+             hjust = 0, 
+             vjust = 0.5, 
+             colour = colourCasual, 
+             fill = "white", 
+             label.size = NA, 
+             family="Helvetica", 
+             label.padding = unit(0.1, "lines"), 
+             size = 3.25) +
+  geom_label(aes(x = 12.25, y = 115000, label = "Member"), 
+             hjust = 0, 
+             vjust = 0.5, 
+             colour = colourMember, 
+             fill = "white", 
+             label.size = NA, 
+             family="Helvetica", 
+             label.padding = unit(0.1, "lines"), 
+             size = 3.25)
+```
+
+```R
+morning_commuter <- trips.cleaned |>
+  filter(weekday != "Sun" & weekday != "Sat") |>
+  filter(hour == 6 | hour == 7 | hour == 8) |>
+  filter(trip_duration < 61) |>
+  group_by(trip_duration, usertype) |>
+  summarise(number_of_rides = n()) |>
+  arrange(trip_duration, usertype) |>
+  mutate(temp_usertype = ifelse(usertype =="Member", "Morning_mem", "Morning_cas"))
+
+morning_commuter
+## # A tibble: 120 × 4
+## # Groups:   trip_duration [60]
+##    trip_duration usertype number_of_rides temp_usertype
+##            <int> <fct>              <int> <chr>        
+##  1             1 Casual                66 Morning_cas  
+##  2             1 Member              4917 Morning_mem  
+##  3             2 Casual               231 Morning_cas  
+##  4             2 Member             19775 Morning_mem  
+##  5             3 Casual               586 Morning_cas  
+##  6             3 Member             34242 Morning_mem  
+##  7             4 Casual               895 Morning_cas  
+##  8             4 Member             42834 Morning_mem  
+##  9             5 Casual              1222 Morning_cas  
+## 10             5 Member             44971 Morning_mem  
+## # … with 110 more rows
+```
+
+```R
+evening_commuter <- trips.cleaned |>
+  filter(weekday != "Sun" & weekday != "Sat") |>
+  filter(hour == 16 | hour == 17 | hour == 18) |>
+  filter(trip_duration < 61) |>
+  group_by(trip_duration, usertype) |>
+  summarise(number_of_rides = n()) |>
+  arrange(trip_duration, usertype) |>
+  mutate(temp_usertype = ifelse(usertype =="Member", "Evening_mem", "Evening_cas"))
+
+evening_commuter
+## # A tibble: 120 × 4
+## # Groups:   trip_duration [60]
+##    trip_duration usertype number_of_rides temp_usertype
+##            <int> <fct>              <int> <chr>        
+##  1             1 Casual               334 Evening_cas  
+##  2             1 Member              5935 Evening_mem  
+##  3             2 Casual               385 Evening_cas  
+##  4             2 Member             22593 Evening_mem  
+##  5             3 Casual               823 Evening_cas  
+##  6             3 Member             40579 Evening_mem  
+##  7             4 Casual              1526 Evening_cas  
+##  8             4 Member             52808 Evening_mem  
+##  9             5 Casual              2197 Evening_cas  
+## 10             5 Member             56721 Evening_mem  
+## # … with 110 more rows
+```
+
+```R
+commuters <- rbind(morning_commuter, evening_commuter)
+commuters <- mutate(commuters, temp_usertype = as.factor(temp_usertype))
+
+commuters
+## # A tibble: 240 × 4
+## # Groups:   trip_duration [60]
+##    trip_duration usertype number_of_rides temp_usertype
+##            <int> <fct>              <int> <fct>        
+##  1             1 Casual                66 Morning_cas  
+##  2             1 Member              4917 Morning_mem  
+##  3             2 Casual               231 Morning_cas  
+##  4             2 Member             19775 Morning_mem  
+##  5             3 Casual               586 Morning_cas  
+##  6             3 Member             34242 Morning_mem  
+##  7             4 Casual               895 Morning_cas  
+##  8             4 Member             42834 Morning_mem  
+##  9             5 Casual              1222 Morning_cas  
+## 10             5 Member             44971 Morning_mem  
+## # … with 230 more rows
+```
+
+```R
+ggplot(commuters, aes(x = trip_duration, y = number_of_rides,
+                      colour = temp_usertype, linetype = temp_usertype)) +
+  geom_line(size = 1) +
+  upright_style() +
+  baseLine_style() +
+  theme(legend.text = element_text(size = 12)) +
+  scale_linetype_manual(values = c("dotdash", "dotdash", "solid", "solid")) +
+  scale_colour_manual(values = c(colourCasual, colourMember, colourCasual, colourMember)) +
+  labs(title="Number of riders taking x minutes")
+
+
+
+
+
+
+
+
+
+
+```
+
+```R
+# ratio of morning commuter usertypes
+morning_commuter_summary <- trips.cleaned |>
+  filter(weekday != "Sun" & weekday != "Sat") |>
+  filter(hour == 6 | hour == 7 | hour == 8) |>
+  select(usertype)
+summary(morning_commuter_summary)
+##    usertype     
+##  Casual: 29451  
+##  Member:573302
+
+
+# % morning commuter members
+573302 / (29451 + 573302) * 100
+## [1] 95.11392
+
+x <- summary(morning_commuter_summary)
+# ratio of morning summer commuter usertypes
+morning_summer_commuter_summary <- trips.cleaned |>
+  filter(month == 6 | month == 7 | month == 8) |>
+  filter(weekday != "Sun" & weekday != "Sat") |>
+  filter(hour == 6 | hour == 7 | hour == 8) |>
+  select(usertype)
+summary(morning_summer_commuter_summary)
+##    usertype     
+##  Casual: 14565  
+##  Member:205273
+
+# % morning summer commuter members
+205273 / (14565 + 205273) * 100
+## [1] 93.37467
+
+# ratio of total usertypes
+total_users <- trips.cleaned |>
+  select(usertype)
+summary(total_users)
+##    usertype      
+##  Casual: 880637  
+##  Member:2937367
+
+# % total members
+2937367 / (880637 + 2937367) * 100
+## [1] 76.93462
+
+# ratio of summer usertypes
+summer_users <- trips.cleaned |>
+  filter(month == 6 | month == 7 | month == 8) |>
+  select(usertype)
+summary(summer_users)
+##    usertype      
+##  Casual: 492739  
+##  Member:1130155
+
+# % summer members
+1130155 / (492739 + 1130155) * 100
+## [1] 69.63825
+
+# ratio of weekend usertypes
+weekend_users <- trips.cleaned |>
+  filter(weekday == "Sat" | weekday == "Sun") |>
+  select(usertype)
+summary(weekend_users)
+##    usertype     
+##  Casual:378235  
+##  Member:543404
+
+# % weekend members
+543404 / (378235 + 543404) * 100
+## [1] 58.96061
+
+# ratio of summer weekend usertypes
+summer_weekend_users <- trips.cleaned |>
+  filter(month == 6 | month == 7 | month == 8) |>
+  filter(weekday == "Sat" | weekday == "Sun") |>
+  select(usertype)
+summary(summer_weekend_users)
+##    usertype     
+##  Casual:211418  
+##  Member:234710
+
+# % summer weekend members
+234710 / (211418 + 234710) * 100
+## [1] 52.61046
+
+# ratio of summer weekend usertypes
+summer_week_users <- trips.cleaned |>
+  filter(month == 6 | month == 7 | month == 8) |>
+  filter(weekday != "Sat" & weekday != "Sun") |>
+  select(usertype)
+summary(summer_week_users)
+##    usertype     
+##  Casual:281321  
+##  Member:895445
+
+# % summer week members
+895445 / (281321 + 895445) * 100
+## [1] 76.09372
+
+# ratio of summer weekend usertypes
+summer_week_users <- trips.cleaned |>  # 5 months
+  filter(month == 5 |month == 6 | month == 7 | month == 8 | month == 9) |>
+  filter(weekday != "Sat" | weekday != "Sun") |>
+  select(usertype)
+summary(summer_week_users)
+##    usertype      
+##  Casual: 703536  
+##  Member:1780035
+
+# % summer week members
+1780035 / (703536 + 1780035) * 100
+## [1] 71.6724
+
+# ratio of summer weekend usertypes
+summer_week_users <- trips.cleaned |>  # 6 months
+  filter(month == 4 | month == 5 |month == 6 | month == 7 | month == 8 | month == 9) |>
+  filter(weekday != "Sat" & weekday != "Sun") |>
+  select(usertype)
+summary(summer_week_users)
+##    usertype      
+##  Casual: 428831  
+##  Member:1612760
+
+# % summer week members
+1612760 / (428831 + 1612760) * 100
+## [1] 78.99525
+
+# ratio of summer weekend usertypes
+summer_week_users <- trips.cleaned |>  # 6 months
+  filter(month == 5 |month == 6 | month == 7 | month == 8 | month == 9 | month == 10) |>
+  filter(weekday != "Sat" & weekday != "Sun") |>
+  select(usertype)
+summary(summer_week_users)
+##    usertype      
+##  Casual: 442625  
+##  Member:1680609
+
+# % summer week members
+1680609 / (442625 + 1680609) * 100
+## [1] 79.15326
+```
+
+### Round trips (keepfit and leisure)
+
+
+
 
 
 
