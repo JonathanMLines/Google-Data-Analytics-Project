@@ -178,8 +178,6 @@ data.frame(colnames(q1_2019),colnames(q2_2019),colnames(q3_2019),colnames(q4_201
 
 ```R
 compare_df_cols(q1_2019, q2_2019, q3_2019, q4_2019, return = "mismatch")
-
-
 ## [1] column_name q1_2019     q2_2019     q3_2019     q4_2019    
 ## <0 rows> (or 0-length row.names)
 ```
@@ -262,8 +260,6 @@ compare_df_cols_same(q1_2019, q2_2019, q3_2019, q4_2019)
 
 ```R
 compare_df_cols(q1_2019, q2_2019, q3_2019, q4_2019, return = "mismatch")
-
-
 ## [1] column_name q1_2019     q2_2019     q3_2019     q4_2019    
 ## <0 rows> (or 0-length row.names)
 ```
@@ -397,9 +393,6 @@ ggplot(highAgeRange, aes(x = age)) +
                      labels = c("65", "70", "75", "80", "90")) +
   labs(title = "Age of riders",
        subtitle = "65 to years old")
-
-
-## Warning: Removed 2 rows containing missing values (geom_bar).
 ```
 
 >
@@ -408,11 +401,9 @@ ggplot(highAgeRange, aes(x = age)) +
 
 ```R
 dim(filter(ages, age > 75))
-
 ## [1] 1954    2
 
 dim(filter(ages, age < 16))
-
 ## [1] 5 2
 ```
 
@@ -503,9 +494,7 @@ pie |>
 # finalise_plot(plot = "Disribution_of_trips.png")
 ```
 
->
-> graph here
->
+![data graph](Disribution_of_trips.png)
 
 ```R
 
