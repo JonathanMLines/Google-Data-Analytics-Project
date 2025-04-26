@@ -1539,7 +1539,7 @@ ggplot(trips_by_start_members, aes(x = reorder(start_station_name, number_of_rid
   baseLine_style()
 ```
 
-![data graph](assets/Popular_stations_members.png)
+![data graph](assets/Popular_stations_member.png)
 
 ```R
 trips_by_start_casuals
