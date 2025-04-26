@@ -331,11 +331,22 @@ ggplot(ages, aes(x = age)) +
   baseLine_style() +
   labs(title = "Age of riders",
        subtitle = "5 to 260 years old")
-```
 
->
-> graph here
->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
 
 ```R
 arrange(ages, age)
@@ -381,11 +392,22 @@ ggplot(highAgeRange, aes(x = age)) +
                      labels = c("65", "70", "75", "80", "90")) +
   labs(title = "Age of riders",
        subtitle = "65 to years old")
-```
 
->
-> graph here
->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
 
 ```R
 dim(filter(ages, age > 75))
@@ -452,9 +474,7 @@ pie
 ##   <fct>           <int>      <dbl>
 ## 1 Casual         880637      0.231
 ## 2 Member        2937367      0.769
-```
 
-```R
 pie |>
   ggplot(aes(x="", y=percentage, fill=usertype)) +
   geom_bar(stat="identity", width=1, color="white") +
@@ -491,7 +511,6 @@ trips_by_day <- trips.cleaned |>
             ,average_duration = mean(trip_duration)) |>
   arrange(weekday, usertype)
 ```
-
 ### Visualize the number of rides per day
 
 ```R
@@ -546,6 +565,17 @@ trips.cleaned |>
   theme(legend.position = c(0.8, 1.1)) +
   guides(fill = guide_legend(ncol = 2)) +
   scale_fill_manual(values = c(colourCasual, colourMember))
+
+
+
+
+
+
+
+
+
+
+
 ```
 
 ## Explorative analysis
@@ -679,8 +709,6 @@ ggplot(trips_by_hour_on_week, aes(x = hour, y = number_of_rides, colour = userty
              family="Helvetica", 
              label.padding = unit(0.1, "lines"), 
              size = 3.25)
-
-#finalise_plot(plot = "Weekday_rides.png")
 ```
 ![data graph](assets/Weekday_rides.png)
 
@@ -768,6 +796,18 @@ ggplot(trips_by_month_weekend, aes(x = month, y = number_of_rides, colour = user
              family="Helvetica", 
              label.padding = unit(0.1, "lines"), 
              size = 3.25)
+
+
+
+
+
+
+
+
+
+
+
+
 ```
 
 ```R
@@ -809,6 +849,17 @@ ggplot(trips_by_month_week, aes(x = month, y = number_of_rides, colour = usertyp
              family="Helvetica", 
              label.padding = unit(0.1, "lines"), 
              size = 3.25)
+
+
+
+
+
+
+
+
+
+
+
 ```
 
 ```R
