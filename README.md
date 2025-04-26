@@ -1284,10 +1284,253 @@ users_longdata |>
 
 ### Most popular start and end stations
 
+```R
+# ratio of total usertypes
+summary(total_users)
+##    usertype      
+##  Casual: 880637  
+##  Member:2937367
 
+2937367 + 880637
+## [1] 3818004
 
+# start
+trips_by_start <- trips.cleaned |> 
+  group_by(start_station_name, usertype) |>  # 
+  summarise(number_of_rides = n(),  # number of rides 
+            p_of_rides = n() / 3818004 * 100,
+            average_duration = mean(trip_duration)) |>
+  arrange(-number_of_rides, start_station_name, usertype)
 
+trips_by_start
+## # A tibble: 1,276 × 5
+## # Groups:   start_station_name [640]
+##    start_station_name       usertype number_of_rides p_of_rides average_duration
+##    <chr>                    <fct>              <int>      <dbl>            <dbl>
+##  1 Streeter Dr & Grand Ave  Casual             53104      1.39             48.0 
+##  2 Canal St & Adams St      Member             50575      1.32             12.2 
+##  3 Clinton St & Madison St  Member             45990      1.20             11.3 
+##  4 Clinton St & Washington… Member             45378      1.19             11.2 
+##  5 Lake Shore Dr & Monroe … Casual             39238      1.03             48.2 
+##  6 Columbus Dr & Randolph … Member             31370      0.822            11.7 
+##  7 Franklin St & Monroe St  Member             30832      0.808            13.9 
+##  8 Kingsbury St & Kinzie St Member             30654      0.803             9.66
+##  9 Daley Center Plaza       Member             30423      0.797            13.7 
+## 10 Canal St & Madison St    Member             27138      0.711            15.0 
+## # … with 1,266 more rows
+# end
 
+trips_by_end <- trips.cleaned |> 
+  group_by(end_station_name, usertype) |>  # 
+  summarise(number_of_rides = n(),   # number of rides 
+            p_of_rides = n() / 3818004 * 100,
+            average_duration = mean(trip_duration)) |>
+  arrange(-number_of_rides, end_station_name, usertype)
+
+trips_by_end
+## # A tibble: 1,280 × 5
+## # Groups:   end_station_name [641]
+##    end_station_name         usertype number_of_rides p_of_rides average_duration
+##    <chr>                    <fct>              <int>      <dbl>            <dbl>
+##  1 Streeter Dr & Grand Ave  Casual             67585      1.77             43.3 
+##  2 Clinton St & Washington… Member             48193      1.26             10.1 
+##  3 Canal St & Adams St      Member             47330      1.24             10.7 
+##  4 Clinton St & Madison St  Member             44307      1.16             10.2 
+##  5 Lake Shore Dr & Monroe … Casual             30673      0.803            45.6 
+##  6 Daley Center Plaza       Member             30631      0.802            11.8 
+##  7 Kingsbury St & Kinzie St Member             30212      0.791             9.11
+##  8 Michigan Ave & Washingt… Member             27934      0.732            10.1 
+##  9 Franklin St & Monroe St  Member             26763      0.701            13.3 
+## 10 Canal St & Madison St    Member             26339      0.690             9.05
+## # … with 1,270 more rows
+
+# start by members
+trips_by_start_members <- trips.cleaned |> 
+  filter(usertype == "Member") |>
+  group_by(start_station_name, usertype) |>  # 
+  summarise(number_of_rides = n(),   # number of rides
+            #p_of_rides = n() / 2937367 * 100,
+            p_of_rides = scales::percent(n() / 2937367, accuracy = 0.1, trim = FALSE),
+            average_duration = mean(trip_duration)) |>
+  arrange(-number_of_rides, start_station_name, usertype)
+
+trips_by_start_members
+## # A tibble: 638 × 5
+## # Groups:   start_station_name [638]
+##    start_station_name       usertype number_of_rides p_of_rides average_duration
+##    <chr>                    <fct>              <int> <chr>                 <dbl>
+##  1 Canal St & Adams St      Member             50575 1.7%                  12.2 
+##  2 Clinton St & Madison St  Member             45990 1.6%                  11.3 
+##  3 Clinton St & Washington… Member             45378 1.5%                  11.2 
+##  4 Columbus Dr & Randolph … Member             31370 1.1%                  11.7 
+##  5 Franklin St & Monroe St  Member             30832 1.0%                  13.9 
+##  6 Kingsbury St & Kinzie St Member             30654 1.0%                   9.66
+##  7 Daley Center Plaza       Member             30423 1.0%                  13.7 
+##  8 Canal St & Madison St    Member             27138 0.9%                  15.0 
+##  9 Michigan Ave & Washingt… Member             25468 0.9%                  13.4 
+## 10 LaSalle St & Jackson Bl… Member             23021 0.8%                  12.2 
+## # … with 628 more rows
+
+# start by casuals
+trips_by_start_casuals <- trips.cleaned |> 
+    filter(usertype != "Member") |>
+  group_by(start_station_name, usertype) |>  # 
+  summarise(number_of_rides = n(),   # number of rides 
+            p_of_rides = scales::percent(n() / 880637, accuracy = 0.1, trim = FALSE),
+            average_duration = mean(trip_duration)) |>
+  arrange(-number_of_rides, start_station_name, usertype)
+
+trips_by_start_casuals
+## # A tibble: 638 × 5
+## # Groups:   start_station_name [638]
+##    start_station_name       usertype number_of_rides p_of_rides average_duration
+##    <chr>                    <fct>              <int> <chr>                 <dbl>
+##  1 Streeter Dr & Grand Ave  Casual             53104 6.0%                   48.0
+##  2 Lake Shore Dr & Monroe … Casual             39238 4.5%                   48.2
+##  3 Millennium Park          Casual             21749 2.5%                   54.2
+##  4 Michigan Ave & Oak St    Casual             21388 2.4%                   55.0
+##  5 Shedd Aquarium           Casual             20617 2.3%                   36.9
+##  6 Lake Shore Dr & North B… Casual             18952 2.2%                   45.8
+##  7 Theater on the Lake      Casual             15027 1.7%                   40.2
+##  8 Dusable Harbor           Casual             12546 1.4%                   42.0
+##  9 Michigan Ave & Washingt… Casual             12228 1.4%                   53.9
+## 10 Adler Planetarium        Casual             11928 1.4%                   38.5
+## # … with 628 more rows
+
+# end by members
+trips_by_end_members <- trips.cleaned |>
+    filter(usertype == "Member") |>
+  group_by(end_station_name, usertype) |>  # 
+  summarise(number_of_rides = n(),   # number of rides 
+            p_of_rides = scales::percent(n() / 2937367, accuracy = 0.1, trim = FALSE),
+            average_duration = mean(trip_duration)) |>
+  arrange(-number_of_rides, end_station_name, usertype)
+
+trips_by_end_members
+## # A tibble: 639 × 5
+## # Groups:   end_station_name [639]
+##    end_station_name         usertype number_of_rides p_of_rides average_duration
+##    <chr>                    <fct>              <int> <chr>                 <dbl>
+##  1 Clinton St & Washington… Member             48193 1.6%                  10.1 
+##  2 Canal St & Adams St      Member             47330 1.6%                  10.7 
+##  3 Clinton St & Madison St  Member             44307 1.5%                  10.2 
+##  4 Daley Center Plaza       Member             30631 1.0%                  11.8 
+##  5 Kingsbury St & Kinzie St Member             30212 1.0%                   9.11
+##  6 Michigan Ave & Washingt… Member             27934 1.0%                  10.1 
+##  7 Franklin St & Monroe St  Member             26763 0.9%                  13.3 
+##  8 Canal St & Madison St    Member             26339 0.9%                   9.05
+##  9 Clark St & Elm St        Member             22720 0.8%                  12.0 
+## 10 LaSalle St & Jackson Bl… Member             22053 0.8%                  12.8 
+## # … with 629 more rows
+
+# end by casuals
+trips_by_end_casuals <- trips.cleaned |>
+    filter(usertype != "Member") |>
+  group_by(end_station_name, usertype) |> 
+  summarise(number_of_rides = n() ,  # number of rides 
+            p_of_rides = scales::percent(n() / 880637, accuracy = 0.1, trim = FALSE),
+            average_duration = mean(trip_duration)) |>
+  arrange(-number_of_rides, end_station_name, usertype)
+
+trips_by_end_casuals
+## # A tibble: 641 × 5
+## # Groups:   end_station_name [641]
+##    end_station_name         usertype number_of_rides p_of_rides average_duration
+##    <chr>                    <fct>              <int> <chr>                 <dbl>
+##  1 Streeter Dr & Grand Ave  Casual             67585 7.7%                   43.3
+##  2 Lake Shore Dr & Monroe … Casual             30673 3.5%                   45.6
+##  3 Millennium Park          Casual             25215 2.9%                   46.8
+##  4 Michigan Ave & Oak St    Casual             23691 2.7%                   46.8
+##  5 Lake Shore Dr & North B… Casual             23278 2.6%                   39.4
+##  6 Theater on the Lake      Casual             18803 2.1%                   41.7
+##  7 Shedd Aquarium           Casual             16475 1.9%                   36.1
+##  8 Michigan Ave & Washingt… Casual             12397 1.4%                   47.7
+##  9 Adler Planetarium        Casual             10598 1.2%                   43.2
+## 10 Dusable Harbor           Casual              9488 1.1%                   42.5
+## # … with 631 more rows
+
+trips_by_start_casuals <- trips_by_start_casuals |>
+  filter(number_of_rides > 10000)
+
+ggplot(trips_by_start_casuals, aes(x = reorder(start_station_name, number_of_rides), y = number_of_rides)) +
+  side_style() +
+  coord_flip()  +
+  geom_bar(stat = "identity", fill = ifelse(trips_by_start_casuals$number_of_rides > 30000, colourCasual, colourGrey)) +
+  scale_y_continuous(limits = c(0, 55000),
+                     breaks = seq(0, 50000, by = 10000),
+                     labels = c("0", "10000", "20000", "30000", "40000", "        50000 rides")) +
+  labs(#title = "Most popular stations",
+       subtitle = "Casual riders",
+        x = "", y = "") +
+  geom_text(aes(label = p_of_rides), hjust = 1.2, vjust = 0.5, colour = "white") +
+  theme(axis.text = ggplot2::element_text(size = 12)) +
+  baseLine_style()
+```
+
+![data graph](assets/Popular_stations_casual.png)
+
+```R
+trips_by_start_members <- trips_by_start_members |>
+  filter(number_of_rides > 23000)
+
+ggplot(trips_by_start_members, aes(x = reorder(start_station_name, number_of_rides), y = number_of_rides)) +
+  side_style() +
+  coord_flip()  +
+  geom_bar(stat = "identity", fill = ifelse(trips_by_start_members$number_of_rides > 26000, colourMember, colourGrey)) +
+  scale_y_continuous(limits = c(0, 55000),
+                     breaks = seq(0, 50000, by = 10000),
+                     labels = c("0", "10000", "20000", "30000", "40000", "         50000 rides")) +
+  labs(#title = "Most popular stations",
+       subtitle = "Member riders",
+        x = "", y = "") +
+  geom_text(aes(label = p_of_rides), hjust = 1.2, vjust = 0.5, colour = "white") +
+  theme(axis.text = ggplot2::element_text(size = 12)) +
+  baseLine_style()
+```
+
+![data graph](assets/Popular_stations_members.png)
+
+```R
+trips_by_start_casuals
+## # A tibble: 10 × 5
+## # Groups:   start_station_name [10]
+##    start_station_name       usertype number_of_rides p_of_rides average_duration
+##    <chr>                    <fct>              <int> <chr>                 <dbl>
+##  1 Streeter Dr & Grand Ave  Casual             53104 6.0%                   48.0
+##  2 Lake Shore Dr & Monroe … Casual             39238 4.5%                   48.2
+##  3 Millennium Park          Casual             21749 2.5%                   54.2
+##  4 Michigan Ave & Oak St    Casual             21388 2.4%                   55.0
+##  5 Shedd Aquarium           Casual             20617 2.3%                   36.9
+##  6 Lake Shore Dr & North B… Casual             18952 2.2%                   45.8
+##  7 Theater on the Lake      Casual             15027 1.7%                   40.2
+##  8 Dusable Harbor           Casual             12546 1.4%                   42.0
+##  9 Michigan Ave & Washingt… Casual             12228 1.4%                   53.9
+## 10 Adler Planetarium        Casual             11928 1.4%                   38.5
+station_pos <- rbind(trips_by_start_casuals, trips_by_start_members) |>
+  select(start_station_name, usertype, number_of_rides, p_of_rides)
+  #left_join(station_pos,stations, by = "start_station_name", copy = FALSE,keep = FALSE)
+
+stations <- stations |>
+  mutate(start_station_name = name) |>
+  select(start_station_name, latitude, longitude)
+
+stations
+## # A tibble: 300 × 3
+##    start_station_name           latitude longitude
+##    <chr>                           <dbl>     <dbl>
+##  1 State St & Harrison St           41.9     -87.6
+##  2 Wilton Ave & Diversey Pkwy       41.9     -87.7
+##  3 Morgan St & 18th St              41.9     -87.7
+##  4 Racine Ave & 19th St             41.9     -87.7
+##  5 Wood St & North Ave              41.9     -87.7
+##  6 Wood St & Division St            41.9     -87.7
+##  7 Loomis St & Taylor St            41.9     -87.7
+##  8 Sheffield Ave & Kingsbury St     41.9     -87.7
+##  9 Aberdeen St & Jackson Blvd       41.9     -87.7
+## 10 May St & Taylor St               41.9     -87.7
+## # … with 290 more rows
+
+```
 
 
 
