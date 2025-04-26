@@ -1,6 +1,5 @@
 # Cyclistic Case Study
 ### Jonathan M Lines
-### 20/02/2022
 
 # Intro
 ## Stakeholders. About the company
@@ -500,20 +499,362 @@ pie |>
         axis.ticks = element_blank(),
         panel.grid  = element_blank(),
         legend.position = "none")
+
+# finalise_plot(plot = "Disribution_of_trips.png")
 ```
 
 >
 > graph here
 >
 
+```R
 
+# analyze ridership data by type and weekday
+trips_by_day <- trips.cleaned |> 
+  group_by(weekday, usertype) |>  # groups by usertype and weekday
+  summarise(number_of_rides = n()   # number of rides 
+            ,average_duration = mean(trip_duration)) |>
+  arrange(weekday, usertype)
+trips_by_day
+## # A tibble: 14 × 4
+## # Groups:   weekday [7]
+##    weekday usertype number_of_rides average_duration
+##    <ord>   <fct>              <int>            <dbl>
+##  1 Sun     Casual            170179             55.7
+##  2 Sun     Member            256241             14.9
+##  3 Mon     Casual            101489             54.0
+##  4 Mon     Member            458780             13.8
+##  5 Tue     Casual             88655             56.9
+##  6 Tue     Member            497025             13.7
+##  7 Wed     Casual             89745             59.8
+##  8 Wed     Member            494277             13.3
+##  9 Thu     Casual            101372             59.5
+## 10 Thu     Member            486915             13.3
+## 11 Fri     Casual            121141             59.7
+## 12 Fri     Member            456966             13.4
+## 13 Sat     Casual            208056             53.6
+## 14 Sat     Member            287163             15.8
+```
 
+### Visualize the number of rides per day
 
+```R
+trips_by_day |>
+  ggplot(aes(x = weekday, y = number_of_rides, fill = usertype)) +
+  upright_style() +
+  geom_bar(stat = "identity", position = "dodge") +
+  baseLine_style() +
+  scale_fill_manual(values = c(colourCasual, colourMember)) +
+  labs(title = "  ",#Riders per day",
+      x = "", y = "Number of riders (100,000)") +
+  theme(legend.position = c(0.1, 1.05)) +
+  guides(fill = guide_legend(ncol = 2)) +
+  scale_y_continuous(limits = c(0, 500000),
+                     breaks = seq(0, 500000, by = 100000),
+                     labels = c("0", "1", "2", "3", "4", "5"))
 
+#finalise_plot(plot = "Riders_per_day.png")
+```
 
+>
+> graph here
+>
 
+### Visualization for average duration per day
 
+```R
 
+trips_by_day |>
+  ggplot(aes(x = weekday, y = average_duration, fill = usertype)) +
+  upright_style() +
+  geom_col(position = "dodge") +
+  baseLine_style() +
+  scale_fill_manual(values = c(colourCasual, colourMember)) +
+  labs(title = "  ",#Average trip duration",
+       x = "", y = "Time (minutes)") +
+  theme(legend.position = c(0.1, 1.05)) +
+  guides(fill = guide_legend(ncol = 2)) +
+  scale_y_continuous(limits = c(0, 60),
+                     breaks = seq(0, 60, by = 20),
+                     labels = c("0", "20", "40", "60"))
+
+#finalise_plot(plot = "Avg_trip_duration.png")
+```
+
+### Plot summary statistics of trip duration per day
+
+```R
+trips.cleaned |>
+  ggplot(aes(x = weekday, y = trip_duration, fill = usertype)) +
+  geom_boxplot(outlier.colour = "light grey", outlier.size = 0.25) +
+  upright_style() +
+  coord_cartesian(ylim = c(0, 50)) +
+  baseLine_style() +
+  labs(title="Trip duration statistics",
+       x = "", y = "Time (minutes)") +
+  theme(legend.position = c(0.8, 1.1)) +
+  guides(fill = guide_legend(ncol = 2)) +
+  scale_fill_manual(values = c(colourCasual, colourMember))
+```
+
+## Explorative analysis
+
+### analyze ridership data by type and weekday
+
+```R
+trips_by_hour <- trips.cleaned |> 
+  group_by(hour, usertype) |>  # groups by hour of day and usertype
+  summarise(number_of_rides = n()   # number of rides 
+            ,average_duration = mean(trip_duration)) |>
+  arrange(hour, usertype)
+
+trips_by_hour
+## # A tibble: 48 × 4
+## # Groups:   hour [24]
+##     hour usertype number_of_rides average_duration
+##    <int> <fct>              <int>            <dbl>
+##  1     0 Casual              8204            103. 
+##  2     0 Member             15874             16.8
+##  3     1 Casual              5384            106. 
+##  4     1 Member              9033             14.2
+##  5     2 Casual              3335            103. 
+##  6     2 Member              5329             24.5
+##  7     3 Casual              1925            191. 
+##  8     3 Member              3686             25.0
+##  9     4 Casual              1175             68.5
+## 10     4 Member              6614             10.6
+## # … with 38 more rows
+```
+
+```R
+ggplot(trips_by_hour, aes(x = hour, y = number_of_rides, colour = usertype)) +
+  geom_line(size = 1) +
+  upright_style() +
+  theme(legend.position = "none") +
+  scale_colour_manual(values = c(colourCasual, colourMember)) +
+  scale_x_continuous(limits = c(0, 25), 
+                     breaks = c(0, 3, 6, 9, 12, 15, 18, 21, 24),
+                     labels = c("Midnight", "3", "6", "9", "12", "15", "18", "21", "Midnight")) +
+  scale_y_continuous(limits = c(0, 400000), breaks = seq(0, 400000, by = 100000),
+                     labels = c("0", "1", "2", "3", "4")) +
+  baseLine_style() +
+  labs(title="Daily bike rides",
+       subtitle = "During full week",
+       x = "", y = "Number of bike rides (100,000s)") +
+  geom_label(aes(x = 23.25, y = 15000, label = "Casual"), 
+             hjust = 0, 
+             vjust = 0.5, 
+             colour = colourCasual, 
+             fill = "white", 
+             label.size = NA, 
+             family="Helvetica", 
+             label.padding = unit(0.1, "lines"), 
+             size = 3.25) +
+  geom_label(aes(x = 23.25, y = 35000, label = "Member"), 
+             hjust = 0, 
+             vjust = 0.5, 
+             colour = colourMember, 
+             fill = "white", 
+             label.size = NA, 
+             family="Helvetica", 
+             label.padding = unit(0.1, "lines"), 
+             size = 3.25)
+```
+
+```R
+trips_by_hour_on_weekend <- trips.cleaned |> 
+  filter(weekday == "Sun" | weekday == "Sat") |>
+  group_by(hour, usertype) |>  # groups by usertype and weekday
+  summarise(number_of_rides = n()   # number of rides 
+            ,average_duration = mean(trip_duration)) |>
+  arrange(hour, usertype)
+
+trips_by_hour_on_weekend
+## # A tibble: 48 × 4
+## # Groups:   hour [24]
+##     hour usertype number_of_rides average_duration
+##    <int> <fct>              <int>            <dbl>
+##  1     0 Casual              4285            113. 
+##  2     0 Member              7815             18.1
+##  3     1 Casual              3062             84.1
+##  4     1 Member              5022             15.0
+##  5     2 Casual              2034             92.9
+##  6     2 Member              3152             14.5
+##  7     3 Casual              1174            205. 
+##  8     3 Member              1886             31.2
+##  9     4 Casual               569             87.9
+## 10     4 Member              1351             11.9
+## # … with 38 more rows
+```
+```R
+ggplot(trips_by_hour_on_weekend, aes(x = hour, y = number_of_rides, colour = usertype)) +
+  geom_line(size = 1) +
+  upright_style() +
+  theme(legend.position = "none") +
+  baseLine_style() +
+  scale_x_continuous(limits = c(0, 25), breaks = c(0, 3, 6, 9, 12, 15, 18, 21, 24, 27),
+                     labels = c("Midnight", "3", "6", "9", "12", "15", "18", "21", "Midnight", " ")) +
+  scale_y_continuous(limits = c(0, 50000), breaks = seq(0, 50000, by = 10000),
+                     labels = c("0", "10", "20", "30", "40", "50")) +
+  scale_colour_manual(values = c(colourCasual, colourMember)) +
+  labs(#title="Daily bike rides",
+       #subtitle = "During the weekend",
+        x = "", y = "Number of bike rides (1000s)") +
+  geom_label(aes(x = 23.25, y = 5500, label = "Casual"), 
+             hjust = 0, 
+             vjust = 0.5, 
+             colour = colourCasual, 
+             fill = "white", 
+             label.size = NA, 
+             family="Helvetica", 
+             label.padding = unit(0.1, "lines"), 
+             size = 3.25) +
+  geom_label(aes(x = 23.25, y = 8000, label = "Member"), 
+             hjust = 0, 
+             vjust = 0.5, 
+             colour = colourMember, 
+             fill = "white", 
+             label.size = NA, 
+             family="Helvetica", 
+             label.padding = unit(0.1, "lines"), 
+             size = 3.25)
+
+#finalise_plot(plot = "Weekend_rides.png")
+```
+
+```R
+trips_by_hour_on_week <- trips.cleaned |> 
+  filter(weekday != "Sun" & weekday != "Sat") |>
+  #filter(weekday == "Mon" | weekday == "Tue" | weekday == "Wed" | weekday == "Thu" | weekday == "Fri") |>
+  group_by(hour, usertype) |>
+  summarise(number_of_rides = n()   
+            ,average_duration = mean(trip_duration)) |>
+  arrange(hour, usertype)
+
+trips_by_hour_on_week
+## # A tibble: 48 × 4
+## # Groups:   hour [24]
+##     hour usertype number_of_rides average_duration
+##    <int> <fct>              <int>            <dbl>
+##  1     0 Casual              3919             91.5
+##  2     0 Member              8059             15.5
+##  3     1 Casual              2322            135. 
+##  4     1 Member              4011             13.3
+##  5     2 Casual              1301            118. 
+##  6     2 Member              2177             39.0
+##  7     3 Casual               751            170. 
+##  8     3 Member              1800             18.6
+##  9     4 Casual               606             50.2
+## 10     4 Member              5263             10.2
+## # … with 38 more rows
+```
+
+```R
+ggplot(trips_by_hour_on_week, aes(x = hour, y = number_of_rides, colour = usertype)) +
+  geom_line(size = 1) +
+  upright_style() +
+  theme(legend.position = "none") +
+  baseLine_style() +
+  scale_x_continuous(limits = c(0, 25), breaks = c(0, 3, 6, 9, 12, 15, 18, 21, 24),
+                     labels = c("Midnight", "3", "6", "9", "12", "15", "18", "21", "Midnight")) +
+  scale_y_continuous(limits = c(0, 400000), breaks = seq(0, 400000, by = 100000),
+                     labels = c("0", "1", "2", "3", "4")) +
+  scale_colour_manual(values = c(colourCasual, colourMember)) +
+  labs(#title="Daily bike rides",
+       #subtitle = "During week days",
+       x = "", y = "Number of bike rides (100,000s)") +
+    geom_label(aes(x = 23.25, y = 15000, label = "Casual"), 
+             hjust = 0, 
+             vjust = 0.5, 
+             colour = colourCasual, 
+             fill = "white", 
+             label.size = NA, 
+             family="Helvetica", 
+             label.padding = unit(0.1, "lines"), 
+             size = 3.25) +
+  geom_label(aes(x = 23.25, y = 35000, label = "Member"), 
+             hjust = 0, 
+             vjust = 0.5, 
+             colour = colourMember, 
+             fill = "white", 
+             label.size = NA, 
+             family="Helvetica", 
+             label.padding = unit(0.1, "lines"), 
+             size = 3.25)
+
+#finalise_plot(plot = "Weekday_rides.png")
+```
+
+### analyze ridership data by type and weekday
+
+```R
+trips_by_month <- trips.cleaned |> 
+  group_by(month, usertype) |>  # groups by usertype and weekday
+  summarise(number_of_rides = n()   # number of rides 
+            ,average_duration = mean(trip_duration)) |>
+  arrange(month, usertype)
+
+trips_by_month
+## # A tibble: 24 × 4
+## # Groups:   month [12]
+##    month usertype number_of_rides average_duration
+##    <dbl> <fct>              <int>            <dbl>
+##  1     1 Casual              4602             46.8
+##  2     1 Member             98670             15.2
+##  3     2 Casual              2638            145. 
+##  4     2 Member             93548             12.9
+##  5     3 Casual             15923             51.8
+##  6     3 Member            149688             12.5
+##  7     4 Casual             47744             50.5
+##  8     4 Member            217566             13.0
+##  9     5 Casual             81624             50.7
+## 10     5 Member            285834             13.4
+## # … with 14 more rows
+```
+
+```R
+ggplot(trips_by_month, aes(x = month, y = number_of_rides, colour = usertype)) +
+  geom_line(size = 1) +
+  upright_style() +
+  theme(legend.position = "none") +
+  scale_x_continuous(limits = c(1, 13), breaks = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13),
+                     labels = c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug","Sep", "Oct", "Nov", "Dec", "")) +
+  scale_y_continuous(limits = c(0, 450000), breaks = seq(0, 450000, by = 100000),
+                     labels = c("0", "1", "2", "3", "4")) +
+  baseLine_style() +
+  scale_colour_manual(values = c(colourCasual, colourMember)) +
+  labs(#title="Number of riders per month",
+       y = "Number of rides (100,000s)", x = "") +
+    geom_label(aes(x = 12.25, y = 20000, label = "Casual"), 
+             hjust = 0, 
+             vjust = 0.5, 
+             colour = colourCasual, 
+             fill = "white", 
+             label.size = NA, 
+             family="Helvetica", 
+             label.padding = unit(0.1, "lines"), 
+             size = 3.25) +
+  geom_label(aes(x = 12.25, y = 140000, label = "Member"), 
+             hjust = 0, 
+             vjust = 0.5, 
+             colour = colourMember, 
+             fill = "white", 
+             label.size = NA, 
+             family="Helvetica", 
+             label.padding = unit(0.1, "lines"), 
+             size = 3.25)
+```
+
+### analyze ridership data by type and weekday
+
+```R
+trips_by_month_weekend <- trips.cleaned |> 
+  filter(weekday == "Sun" | weekday == "Sat") |>
+  group_by(month, usertype) |>  # groups by usertype and weekday
+  summarise(number_of_rides = n()   # number of rides 
+            ,average_duration = mean(trip_duration)) |>
+  arrange(month, usertype)
+```
 
 
 
