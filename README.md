@@ -1185,9 +1185,115 @@ users |>
 
 ```
 ```R
+users_longdata <- users |>
+  select(user_subtype, Casual, Member) |>
+  pivot_longer(names_to = "usertype", values_to = "number_of_rides", Casual:Member) |>
+  mutate(percent = c(NA, 77, NA,  95, NA,  59, NA, 70, NA, 53, NA, 31))
 
+users
+##        user_subtype   points Casual  Member
+## 1             Total 76.93462 880637 2937367
+## 2 Morning\ncommuter 95.11392  29451  573302
+## 3           Weekend 58.96061 378235  543404
+## 4            Summer 69.63825 492739 1130155
+## 5   Summer\nweekend 52.61046 211418  234710
+## 6       Round\ntrip 31.29717 104598   47649
 
+users_longdata
+## # A tibble: 12 × 4
+##    user_subtype        usertype number_of_rides percent
+##    <fct>               <chr>              <dbl>   <dbl>
+##  1 "Total"             Casual            880637      NA
+##  2 "Total"             Member           2937367      77
+##  3 "Morning\ncommuter" Casual             29451      NA
+##  4 "Morning\ncommuter" Member            573302      95
+##  5 "Weekend"           Casual            378235      NA
+##  6 "Weekend"           Member            543404      59
+##  7 "Summer"            Casual            492739      NA
+##  8 "Summer"            Member           1130155      70
+##  9 "Summer\nweekend"   Casual            211418      NA
+## 10 "Summer\nweekend"   Member            234710      53
+## 11 "Round\ntrip"       Casual            104598      NA
+## 12 "Round\ntrip"       Member             47649      31
+users_longdata <- users_longdata |>
+  dplyr::mutate(perc = scales::percent(percent / 100, accuracy = 1.0, trim = FALSE))
+
+users_longdata
+## # A tibble: 12 × 5
+##    user_subtype        usertype number_of_rides percent perc 
+##    <fct>               <chr>              <dbl>   <dbl> <chr>
+##  1 "Total"             Casual            880637      NA <NA> 
+##  2 "Total"             Member           2937367      77 77%  
+##  3 "Morning\ncommuter" Casual             29451      NA <NA> 
+##  4 "Morning\ncommuter" Member            573302      95 95%  
+##  5 "Weekend"           Casual            378235      NA <NA> 
+##  6 "Weekend"           Member            543404      59 59%  
+##  7 "Summer"            Casual            492739      NA <NA> 
+##  8 "Summer"            Member           1130155      70 70%  
+##  9 "Summer\nweekend"   Casual            211418      NA <NA> 
+## 10 "Summer\nweekend"   Member            234710      53 53%  
+## 11 "Round\ntrip"       Casual            104598      NA <NA> 
+## 12 "Round\ntrip"       Member             47649      31 31%
+
+#users_longdata |>
+ggplot(users_longdata, aes(x = user_subtype, y = number_of_rides, fill = usertype)) +
+  upright_style() +
+  geom_bar(stat = "identity", position = "dodge") +
+  baseLine_style() +
+  geom_text(aes(label = perc), hjust = -0.3,
+            vjust = ifelse(users_longdata$percent > 50, 1.5, -0.5)) +
+  scale_fill_manual(values = c(colourCasual, colourMember)) +
+  labs(title = "  ",#Riders per day",
+      x = "", y = "Number of riders (1,000,000)") +
+  theme(legend.position = c(0.1, 1.05),
+        axis.text = ggplot2::element_text(size = 14)
+        ) +
+  guides(fill = guide_legend(ncol = 2)) +
+
+  scale_y_continuous(limits = c(0, 3000000),
+                     breaks = seq(0, 3000000, by = 500000),
+                     labels = c("0", "0.5", "1", "1.5", "2", "2.5", "3"))
 ```
+
+![data graph](assets/Summary.png)
+
+```R
+users_longdata |>
+  ggplot(aes(x = user_subtype, y = number_of_rides, fill = usertype)) +
+  side_style() +
+  geom_bar(stat = "identity", position = "dodge") +
+  geom_text(aes(label = perc),
+            hjust = ifelse(users_longdata$percent > 50, 1.05, -0.1),
+            vjust = -0.4,
+            size = 5) +
+  coord_flip()  +
+  baseLine_style() +
+  scale_fill_manual(values = c(colourCasual, colourMember)) +
+  labs(title = "  ",#Riders per day",
+       x = "", y = "Number of riders (1,000,000)") +
+  guides(fill = guide_legend(ncol = 2)) +
+  theme(legend.position = c(0.1, 1.1),
+        axis.text = ggplot2::element_text(size = 14)
+        ) +
+  scale_y_continuous(limits = c(0, 3000000),
+                     breaks = seq(0, 3000000, by = 500000),
+                     labels = c("0", "0.5", "1", "1.5", "2", "2.5", "3"))
+```
+
+![data graph](assets/Summary_side.png)
+
+### Most popular start and end stations
+
+
+
+
+
+
+
+
+
+
+
 
 
 # Foo
