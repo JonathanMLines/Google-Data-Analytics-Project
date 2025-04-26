@@ -1054,10 +1054,140 @@ summary(summer_week_users)
 
 ### Round trips (keepfit and leisure)
 
+```R
+# ratio of summer weekend roundtrip usertypes
+round_trips <- trips.cleaned |>
+  filter(start_station_id == end_station_id) |>
+  select(usertype)
+summary(round_trips)
+##    usertype     
+##  Casual:104598  
+##  Member: 47649
+
+104598 + 47649
+## [1] 152247
+
+# % summer weekend roundtrip members
+47649 / (104598 + 47649) * 100
+## [1] 31.29717
+
+round_trips <- trips.cleaned |>
+  filter(start_station_id == end_station_id) |>
+  group_by(start_station_name) |>
+  summarise(number_of_rides = n(),
+            perc_of_rides = n() / 152247 * 100,
+            average_age = mean(age, na.rm = TRUE),
+            average_duration = mean(trip_duration)) |>
+  arrange(-number_of_rides)
+#summary(mean(round_trips))
+round_trips
+## # A tibble: 639 × 5
+##    start_station_name number_of_rides perc_of_rides average_age average_duration
+##    <chr>                        <int>         <dbl>       <dbl>            <dbl>
+##  1 Streeter Dr & Gra…            9274          6.09        33.8             53.2
+##  2 Lake Shore Dr & M…            8554          5.62        32.2             45.4
+##  3 Michigan Ave & Oa…            5437          3.57        35.7             59.1
+##  4 Millennium Park               3082          2.02        34.2             54.4
+##  5 Montrose Harbor               3019          1.98        34.4             57.8
+##  6 Theater on the La…            2567          1.69        31.6             47.9
+##  7 Lake Shore Dr & N…            2353          1.55        32.8             52.9
+##  8 Shedd Aquarium                1985          1.30        34.9             38.1
+##  9 Michigan Ave & 8t…            1916          1.26        35.3             58.9
+## 10 Adler Planetarium             1807          1.19        38.1             44.2
+## # … with 629 more rows
+
+round_trips_members <- trips.cleaned |>
+  filter(start_station_id == end_station_id & usertype == "Member") |>
+  group_by(start_station_name) |>
+  summarise(number_of_rides = n(),
+            perc_of_rides = n() / 47649 * 100,
+            average_age = mean(age, na.rm = TRUE),
+            average_duration = mean(trip_duration)) |>
+  arrange(-number_of_rides)
+#summary(mean(round_trips_members))
+
+round_trips_members
+## # A tibble: 623 × 5
+##    start_station_name number_of_rides perc_of_rides average_age average_duration
+##    <chr>                        <int>         <dbl>       <dbl>            <dbl>
+##  1 Streeter Dr & Gra…             642         1.35         34.8             25.8
+##  2 Theater on the La…             578         1.21         33.8             26.0
+##  3 Lake Shore Dr & N…             526         1.10         34.9             35.9
+##  4 Lake Shore Dr & M…             502         1.05         34.5             21.4
+##  5 Burnham Harbor                 497         1.04         38.4             29.9
+##  6 Michigan Ave & Oa…             447         0.938        36.0             32.6
+##  7 Loomis St & Lexin…             405         0.850        28.5             14.9
+##  8 Wabash Ave & Gran…             403         0.846        35.8             41.5
+##  9 Montrose Harbor                394         0.827        39.2             24.6
+## 10 Adler Planetarium              384         0.806        42.2             19.0
+## # … with 613 more rows
+
+round_trips_casuals <- trips.cleaned |>
+  filter(start_station_id == end_station_id & usertype != "Member") |>
+  group_by(start_station_name) |>
+  summarise(number_of_rides = n(),
+            perc_of_rides = n() / 104598 * 100,
+            average_age = mean(age, na.rm = TRUE),
+            average_duration = mean(trip_duration)
+            ) |>
+  arrange(-number_of_rides)
+#summary(mean(round_trips_casuals))
+
+round_trips_casuals
+## # A tibble: 635 × 5
+##    start_station_name number_of_rides perc_of_rides average_age average_duration
+##    <chr>                        <int>         <dbl>       <dbl>            <dbl>
+##  1 Streeter Dr & Gra…            8632          8.25        33.4             55.2
+##  2 Lake Shore Dr & M…            8052          7.70        31.5             46.9
+##  3 Michigan Ave & Oa…            4990          4.77        35.5             61.4
+##  4 Millennium Park               2920          2.79        32.9             56.5
+##  5 Montrose Harbor               2625          2.51        31.2             62.8
+##  6 Theater on the La…            1989          1.90        28.8             54.3
+##  7 Lake Shore Dr & N…            1827          1.75        30.1             57.8
+##  8 Michigan Ave & 8t…            1799          1.72        34.9             61.3
+##  9 Shedd Aquarium                1758          1.68        32.9             40.6
+## 10 Dusable Harbor                1527          1.46        34.0             43.8
+## # … with 625 more rows
+```
+
+```R
+user_subtype <- c("Total", "Morning\ncommuter", "Weekend", "Summer", "Summer\nweekend", "Round\ntrip")
+points <- c(76.93462, 95.11392, 58.96061, 69.63825, 52.61046, 31.29717)
+users <- data.frame(user_subtype = c("Total", "Morning\ncommuter", "Weekend", "Summer", "Summer\nweekend", "Round\ntrip"),
+                    points = c(76.93462, 95.11392, 58.96061, 69.63825, 52.61046, 31.29717),
+                    Casual = c(880637, 29451,  378235, 492739, 211418, 104598),
+                    Member = c(2937367, 573302,  543404, 1130155, 234710, 47649) )
+users$user_subtype <- factor(users$user_subtype,
+                levels = c("Round\ntrip", "Summer\nweekend", "Summer", "Weekend","Morning\ncommuter",  "Total"))
+
+users |>
+  ggplot(aes(x = user_subtype, y = points)) +
+  upright_style() +
+  geom_bar(stat = "identity") +
+  baseLine_style() +
+  scale_y_continuous(limits = c(0, 100)) +
+  labs(title="Ratio of riders",
+      x = "", y = "Percent of riders")
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+```
+```R
+
+
+```
 
 
 # Foo
