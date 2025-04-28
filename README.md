@@ -1507,12 +1507,3 @@ stations
 ## # … with 290 more rows
 
 ```
-
-
-
-
-
-
-
-
-# Foo
