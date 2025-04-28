@@ -502,7 +502,7 @@ pie |>
 
 ![data graph](assets/Disribution_of_trips.png)
 
-### analyze ridership data by type and weekday
+### Analyze ridership data by type and weekday
 
 ```R
 trips_by_day <- trips.cleaned |> 
@@ -755,7 +755,7 @@ ggplot(trips_by_month, aes(x = month, y = number_of_rides, colour = usertype)) +
 
 ![data graph](assets/Monthly_rides.png)
 
-### analyze ridership data by type and weekday
+### Analyze ridership data by type and weekday
 
 ```R
 trips_by_month_weekend <- trips.cleaned |> 
