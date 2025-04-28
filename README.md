@@ -520,7 +520,7 @@ trips_by_day |>
   geom_bar(stat = "identity", position = "dodge") +
   baseLine_style() +
   scale_fill_manual(values = c(colourCasual, colourMember)) +
-  labs(title = "  ",#Riders per day",
+  labs(title = "Rides per day",
       x = "", y = "Number of riders (100,000)") +
   theme(legend.position = c(0.1, 1.05)) +
   guides(fill = guide_legend(ncol = 2)) +
@@ -540,7 +540,7 @@ trips_by_day |>
   geom_col(position = "dodge") +
   baseLine_style() +
   scale_fill_manual(values = c(colourCasual, colourMember)) +
-  labs(title = "  ",#Average trip duration",
+  labs(title = "Average trip duration",
        x = "", y = "Time (minutes)") +
   theme(legend.position = c(0.1, 1.05)) +
   guides(fill = guide_legend(ncol = 2)) +
@@ -643,7 +643,7 @@ ggplot(trips_by_hour_on_weekend, aes(x = hour, y = number_of_rides, colour = use
   scale_y_continuous(limits = c(0, 50000), breaks = seq(0, 50000, by = 10000),
                      labels = c("0", "10", "20", "30", "40", "50")) +
   scale_colour_manual(values = c(colourCasual, colourMember)) +
-  labs(#title="Daily bike rides",
+  labs(title="Bike rides during weekend",
        #subtitle = "During the weekend",
         x = "", y = "Number of bike rides (1000s)") +
   geom_label(aes(x = 23.25, y = 5500, label = "Casual"), 
@@ -666,7 +666,7 @@ ggplot(trips_by_hour_on_weekend, aes(x = hour, y = number_of_rides, colour = use
              size = 3.25)
 ```
 
-![data graph](assets/Weekday_rides.png)
+![data graph](assets/Weekend_rides.png)
 
 
 ```R
@@ -688,7 +688,7 @@ ggplot(trips_by_hour_on_week, aes(x = hour, y = number_of_rides, colour = userty
   scale_y_continuous(limits = c(0, 400000), breaks = seq(0, 400000, by = 100000),
                      labels = c("0", "1", "2", "3", "4")) +
   scale_colour_manual(values = c(colourCasual, colourMember)) +
-  labs(#title="Daily bike rides",
+  labs(title="Bike rides during week days",
        #subtitle = "During week days",
        x = "", y = "Number of bike rides (100,000s)") +
     geom_label(aes(x = 23.25, y = 15000, label = "Casual"), 
@@ -731,7 +731,7 @@ ggplot(trips_by_month, aes(x = month, y = number_of_rides, colour = usertype)) +
                      labels = c("0", "1", "2", "3", "4")) +
   baseLine_style() +
   scale_colour_manual(values = c(colourCasual, colourMember)) +
-  labs(#title="Number of riders per month",
+  labs(title="Number of riders per month",
        y = "Number of rides (100,000s)", x = "") +
     geom_label(aes(x = 12.25, y = 20000, label = "Casual"), 
              hjust = 0, 
