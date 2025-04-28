@@ -331,22 +331,9 @@ ggplot(ages, aes(x = age)) +
   baseLine_style() +
   labs(title = "Age of riders",
        subtitle = "5 to 260 years old")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ```
+
+![data graph](assets/Age_of_riders.png)
 
 ```R
 arrange(ages, age)
@@ -392,22 +379,9 @@ ggplot(highAgeRange, aes(x = age)) +
                      labels = c("65", "70", "75", "80", "90")) +
   labs(title = "Age of riders",
        subtitle = "65 to years old")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ```
+
+![data graph](assets/Age_of_riders_old.png)
 
 ```R
 dim(filter(ages, age > 75))
@@ -565,18 +539,9 @@ trips.cleaned |>
   theme(legend.position = c(0.8, 1.1)) +
   guides(fill = guide_legend(ncol = 2)) +
   scale_fill_manual(values = c(colourCasual, colourMember))
-
-
-
-
-
-
-
-
-
-
-
 ```
+
+![data graph](assets/Trips_duration_stats.png)
 
 ## Explorative analysis
 
@@ -623,7 +588,7 @@ ggplot(trips_by_hour, aes(x = hour, y = number_of_rides, colour = usertype)) +
              size = 3.25)
 ```
 
-![data graph](assets/Weekday_rides.png)
+![data graph](assets/Trips_by_hour_full_week.png)
 
 ```R
 trips_by_hour_on_weekend <- trips.cleaned |> 
@@ -796,19 +761,9 @@ ggplot(trips_by_month_weekend, aes(x = month, y = number_of_rides, colour = user
              family="Helvetica", 
              label.padding = unit(0.1, "lines"), 
              size = 3.25)
-
-
-
-
-
-
-
-
-
-
-
-
 ```
+
+![data graph](assets/Trips_by_month_weekends.png)
 
 ```R
 trips_by_month_week <- trips.cleaned |> 
@@ -849,18 +804,9 @@ ggplot(trips_by_month_week, aes(x = month, y = number_of_rides, colour = usertyp
              family="Helvetica", 
              label.padding = unit(0.1, "lines"), 
              size = 3.25)
-
-
-
-
-
-
-
-
-
-
-
 ```
+
+![data graph](assets/Disribution_of_trips.png)
 
 ```R
 morning_commuter <- trips.cleaned |>
@@ -950,17 +896,8 @@ ggplot(commuters, aes(x = trip_duration, y = number_of_rides,
   scale_linetype_manual(values = c("dotdash", "dotdash", "solid", "solid")) +
   scale_colour_manual(values = c(colourCasual, colourMember, colourCasual, colourMember)) +
   labs(title="Number of riders taking x minutes")
-
-
-
-
-
-
-
-
-
-
 ```
+![data graph](assets/Riders_taking_X_mins.png)
 
 ```R
 # ratio of morning commuter usertypes
@@ -1219,22 +1156,10 @@ users |>
   scale_y_continuous(limits = c(0, 100)) +
   labs(title="Ratio of riders",
       x = "", y = "Percent of riders")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ```
+
+![data graph](assets/Ratio_of_riders.png)
+
 ```R
 users_longdata <- users |>
   select(user_subtype, Casual, Member) |>
