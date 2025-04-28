@@ -806,7 +806,7 @@ ggplot(trips_by_month_week, aes(x = month, y = number_of_rides, colour = usertyp
              size = 3.25)
 ```
 
-![data graph](assets/Disribution_of_trips.png)
+![data graph](assets/Number_of_rides_per_month_weekdays.png)
 
 ```R
 morning_commuter <- trips.cleaned |>
@@ -897,6 +897,11 @@ ggplot(commuters, aes(x = trip_duration, y = number_of_rides,
   scale_colour_manual(values = c(colourCasual, colourMember, colourCasual, colourMember)) +
   labs(title="Number of riders taking x minutes")
 ```
+
+
+![data graph](assets/Ratio_of_riders.png)
+
+
 ![data graph](assets/Riders_taking_X_mins.png)
 
 ```R
