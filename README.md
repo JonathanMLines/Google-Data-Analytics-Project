@@ -899,8 +899,6 @@ ggplot(commuters, aes(x = trip_duration, y = number_of_rides,
 
 ![data graph](assets/Riders_taking_X_mins.png)
 
-![data graph](assets/Riders_taking _X_mins.png)
-
 ```R
 # ratio of morning commuter usertypes
 morning_commuter_summary <- trips.cleaned |>
