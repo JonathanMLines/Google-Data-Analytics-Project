@@ -633,7 +633,6 @@ ggplot(trips_by_hour_on_weekend, aes(x = hour, y = number_of_rides, colour = use
 
 ![data graph](assets/Weekend_rides.png)
 
-
 ```R
 trips_by_hour_on_week <- trips.cleaned |> 
   filter(weekday != "Sun" & weekday != "Sat") |>
@@ -897,6 +896,8 @@ ggplot(commuters, aes(x = trip_duration, y = number_of_rides,
   scale_colour_manual(values = c(colourCasual, colourMember, colourCasual, colourMember)) +
   labs(title="Number of riders taking x minutes")
 ```
+
+![data graph](assets/Riders_taking_X_mins.png)
 
 ![data graph](assets/Riders_taking _X_mins.png)
 
@@ -1246,7 +1247,7 @@ users_longdata |>
   coord_flip()  +
   baseLine_style() +
   scale_fill_manual(values = c(colourCasual, colourMember)) +
-  labs(title = "  ",#Riders per day",
+  labs(title = "Ratio of user groups",
        x = "", y = "Number of riders (1,000,000)") +
   guides(fill = guide_legend(ncol = 2)) +
   theme(legend.position = c(0.1, 1.1),
@@ -1437,7 +1438,7 @@ ggplot(trips_by_start_casuals, aes(x = reorder(start_station_name, number_of_rid
                      breaks = seq(0, 50000, by = 10000),
                      labels = c("0", "10000", "20000", "30000", "40000", "        50000 rides")) +
   labs(#title = "Most popular stations",
-       subtitle = "Casual riders",
+       subtitle = "STATION    CASUAL RIDERS",
         x = "", y = "") +
   geom_text(aes(label = p_of_rides), hjust = 1.2, vjust = 0.5, colour = "white") +
   theme(axis.text = ggplot2::element_text(size = 12)) +
@@ -1457,8 +1458,8 @@ ggplot(trips_by_start_members, aes(x = reorder(start_station_name, number_of_rid
   scale_y_continuous(limits = c(0, 55000),
                      breaks = seq(0, 50000, by = 10000),
                      labels = c("0", "10000", "20000", "30000", "40000", "         50000 rides")) +
-  labs(#title = "Most popular stations",
-       subtitle = "Member riders",
+  labs(title = "Most popular start stations",
+       subtitle = "STATION   MEMBERS RIDERS",
         x = "", y = "") +
   geom_text(aes(label = p_of_rides), hjust = 1.2, vjust = 0.5, colour = "white") +
   theme(axis.text = ggplot2::element_text(size = 12)) +
