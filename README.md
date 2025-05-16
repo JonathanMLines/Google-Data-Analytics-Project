@@ -5,13 +5,13 @@
 ## Stakeholders. About the company
 Cyclistic is a successful bike-sharing business with a fleet of 5824 bicycles spread over a network of 692 stations across Chicago. The bikes can be unlocked from one station and returned to any other station in the system. Cyclistic has flexible price plans: single-ride passes, full-day passes, and annual memberships. Customers who purchase single-ride or full-day passes are referred to as ‘casual’ riders. Customers who purchase annual memberships are Cyclistic ‘members’.
 ## Business Task
-Cyclistic’s annual members are much more profitable than casual riders. Moreno believes that maximizing the number of annual members will be key to future growth. Rather than creating a marketing campaign that targets all-new customers, Moreno believes there is a very good chance to convert casual riders into members. She notes that casual riders are already aware of the Cyclistic program and have chosen Cyclistic for their mobility needs.
+Cyclistic’s annual members are much more profitable than casual riders. Moreno believes that maximizing the number of annual members will be key to future growth. Rather than creating a marketing campaign that targets all new customers, Moreno believes there is a very good chance to convert casual riders into members. She notes that casual riders are already aware of the Cyclistic program and have chosen Cyclistic for their mobility needs.
 ## Project task:
 ### How do annual members and casual riders use Cyclistic bikes differently?
 
 # Data
 ## Prepare
-The data set contains bike trip info for all four quarters of the year 2019. A supplementary data set about bike stations might also be used. This is first party data with personally identifiable information removed.
+The data set contains bike trip info for all four quarters of the year 2019. A supplementary data set about bike stations might also be used. This is first-party data with personally identifiable information removed.
 ## Process
 ### Install required packages
 
