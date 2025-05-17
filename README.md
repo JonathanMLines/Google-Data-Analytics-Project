@@ -226,7 +226,7 @@ compare_df_cols(q1_2019, q2_2019, q3_2019, q4_2019, return = "mismatch")
                    ,end_station_id = to_station_id))
 ```
 
-### Compare columns names
+### Compare column names
 
 ```R
 data.frame(colnames(q1_2019),colnames(q2_2019),colnames(q3_2019),colnames(q4_2019))
@@ -247,7 +247,7 @@ data.frame(colnames(q1_2019),colnames(q2_2019),colnames(q3_2019),colnames(q4_201
 ## 12         birth_year         birth_year         birth_year         birth_year
 ```
 
-### Are column names all the same ?
+### Are column names all the same?
 
 ```R
 compare_df_cols_same(q1_2019, q2_2019, q3_2019, q4_2019)
@@ -280,7 +280,7 @@ total_trips <- mutate(total_trips, trip_id = as.integer(trip_id),
 # summary(total_trips)
 ```
 
-### Check station name spelling. What station is in end_station_name but not start_station_name coloumns ?
+### Check station name spelling. What station is in the end_station_name but not the start_station_name columns?
 
 ```R
 start_stations <- select(total_trips, start_station_name) |>
@@ -319,7 +319,7 @@ anti_join(end_stations, start_stations, by = "station_name")
 ## 1 ts ~ divvy parts testing
 ```
 
-### Check age range. Someone was born on 1759
+### Check age range. Someone was born in 1759
 
 ```R
 ages <- select(total_trips, birth_year) |>
@@ -391,7 +391,7 @@ dim(filter(ages, age < 16))
 ## [1] 5 2
 ```
 
-### 1954 riders have ages between 76 and 260. 5 riders are 5 years old. This is incorrect data. Replace false birth_year data with NA’s and gender NA’s with Unknown.
+### 1954 riders have ages between 76 and 260. 5 riders are 5 years old. This is incorrect data. Replace false birth_year data with NAs and gender NAs with Unknown.
 
 ```R
 trips.cleaned <- total_trips |>
@@ -407,7 +407,7 @@ trips.cleaned <- total_trips |>
 
 ## Process
 
-### Tidy up columns. Covert trip_duration from seconds to minutes. Age is more useful than birth_year. Split start_time into month weekday and hour. Knowing if trip is over more than one day might be useful. Change usertype factors to Member and Casual.
+### Tidy up columns. Covert trip_duration from seconds to minutes. Age is more useful than birth_year. Split start_time into month weekday and hour. Knowing if a trip is over more than one day might be useful. Change user-type factors to Member and Casual.
 
 ```R
 trips.cleaned <- trips.cleaned |>
@@ -422,7 +422,7 @@ trips.cleaned <- trips.cleaned |>
 # summary(trips.cleaned)
 ```
 
-## Discriptive analysis
+## Descriptive analysis
 
 ### Compare members and casual users
 
@@ -1040,7 +1040,7 @@ summary(summer_week_users)
 ## [1] 79.15326
 ```
 
-### Round trips (keepfit and leisure)
+### Round trips (keep-fit and leisure)
 
 ```R
 # ratio of summer weekend roundtrip usertypes
